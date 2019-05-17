@@ -20,48 +20,7 @@ char chunk_of_64[100][64];
 int num_row;
 char K_I[16][48]; ///stores key generated in each roung
 
-//needed for key generation
 
-    int CP_1[56] = {57, 49, 41, 33, 25, 17, 9,
-                    1, 58, 50, 42, 34, 26, 18,
-                    10, 2, 59, 51, 43, 35, 27,
-                    19, 11, 3, 60, 52, 44, 36,
-                    63, 55, 47, 39, 31, 23, 15,
-                    7, 62, 54, 46, 38, 30, 22,
-                    14, 6, 61, 53, 45, 37, 29,
-                    21, 13, 5, 28, 20, 12, 4
-                   };
-
-    int SHIFT[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
-
-    int CP_2[48] = {14, 17, 11, 24, 1, 5, 3, 28,
-                    15, 6, 21, 10, 23, 19, 12, 4,
-                    26, 8, 16, 7, 27, 20, 13, 2,
-                    41, 52, 31, 37, 47, 55, 30, 40,
-                    51, 45, 33, 48, 44, 49, 39, 56,
-                    34, 53, 46, 42, 50, 36, 29, 32
-                   };
-
-
-	//needed for datafunction
-	int E[48] = {32, 1, 2, 3, 4, 5,
-                 4, 5, 6, 7, 8, 9,
-                 8, 9, 10, 11, 12, 13,
-                 12, 13, 14, 15, 16, 17,
-                 16, 17, 18, 19, 20, 21,
-                 20, 21, 22, 23, 24, 25,
-                 24, 25, 26, 27, 28, 29,
-                 28, 29, 30, 31, 32, 1};
-
-        int PI_2[32] = {35, 38, 46, 6, 43, 40, 14, 45,
-            33, 19, 26, 15, 23, 8, 22, 10, 
-            12, 11, 5, 25, 27, 21, 16, 31,
-            28, 32, 34, 24, 9, 37, 2, 1};
-
-        int P[32] = {16, 7, 20, 21, 29, 12, 28, 17,
-                 1, 15, 23, 26, 5, 18, 31, 10,
-                 2, 8, 24, 14, 32, 27, 3, 9,
-                 19, 13, 30, 6, 22, 11, 4, 25};
 void add_padding_at_end()
 {
     string output_str;
@@ -171,14 +130,13 @@ char* leftrotate(char arr[], int d, int n)
 { 
     for (int itr = 0; itr < d; itr++) 
         {
-		char temp = arr[0], i; 
-	    	for (i = 0; i < n - 1; i++) 
-		arr[i] = arr[i + 1]; 
-	  
-	    	arr[i] = temp;
-	}
-	return arr; 
 
+    	char temp = arr[0], i; 
+    	for (i = 0; i < n - 1; i++) 
+        	arr[i] = arr[i + 1]; 
+  		arr[i] = temp;
+        }
+    return arr;
 } 
 
 
@@ -193,92 +151,111 @@ void printString(string str)
 }
 void generate_key(string key)
 {
-    char modified_key_for_transposition_with_CP_1[100];
-        modified_key_for_transposition_with_CP_1[56] = '\0';
+
+    int CP_1[56] = {57, 49, 41, 33, 25, 17, 9,
+                    1, 58, 50, 42, 34, 26, 18,
+                    10, 2, 59, 51, 43, 35, 27,
+                    19, 11, 3, 60, 52, 44, 36,
+                    63, 55, 47, 39, 31, 23, 15,
+                    7, 62, 54, 46, 38, 30, 22,
+                    14, 6, 61, 53, 45, 37, 29,
+                    21, 13, 5, 28, 20, 12, 4
+                   };
+
+    int SHIFT[16] = {1,1,2,2,2,2,2,2,1,2,2,2,2,2,2,1};
+
+    int CP_2[48] = {14, 17, 11, 24, 1, 5, 3, 28,
+                    15, 6, 21, 10, 23, 19, 12, 4,
+                    26, 8, 16, 7, 27, 20, 13, 2,
+                    41, 52, 31, 37, 47, 55, 30, 40,
+                    51, 45, 33, 48, 44, 49, 39, 56,
+                    34, 53, 46, 42, 50, 36, 29, 32
+                   };
+
+    char modified_key[56];
+       // modified_key[56] = '\0';
     char modified_key_for_transposition_with_CP_2[100];
-        modified_key_for_transposition_with_CP_2[56] = '\0';
-
-    //initialize
-    char key_in_round[16][100]; //key_in_round is input key for each round
-    for(int i=0; i< 16; i++)
-    {
-        key_in_round[i][56] = '\0';
-    }
-    
-    char first_28_bits[28];
-        first_28_bits[28] = '\0';
-    char last_28_bits[28];
-        last_28_bits[28] = '\0'; 
-    
-    char* left_rotated_first_28_bits = new char [28];
-        left_rotated_first_28_bits[28] = '\0';
-    char* left_rotated_last_28_bits = new char[28] ;
-        left_rotated_last_28_bits[28] = '\0';
-
+        //modified_key_for_transposition_with_CP_2[56] = '\0';
 
     //transposition of original key using CP_1
     for(int i=0; i< 56; i++)
     {
-        modified_key_for_transposition_with_CP_1[i] = key[CP_1[i]-1];
+        modified_key[i] = key[CP_1[i]-1];
     }
 
     //printing modified key
-    //cout<<"\n\nmodified key after using CP_1 i.e key in round 0 \n";
+    cout<<"\n\nmodified key after using CP_1 i.e key in round 0 \n";
     for(int j=0; j< 56; j++)
     {
-      //  cout << modified_key_for_transposition_with_CP_1[j];
+        cout << modified_key[j];
     }
-    //cout<<endl;
+    cout<<endl;
 
 
+    //initialize
+     char key_in_round[16][100]; //key_in_round is input key for each round
+    //for(int i=0; i< 16; i++)
+   // {
+     //   key_in_round[i][56] = '\0';
+    //}
     
+    char first_28_bits[28];
+     //   first_28_bits[28] = '\0';
+    char last_28_bits[28];
+      //  last_28_bits[28] = '\0'; 
+    
+    char* left_rotated_first_28_bits = new char [28];
+      // left_rotated_first_28_bits[28] = '\0';
+    char* left_rotated_last_28_bits = new char[28] ;
+       //left_rotated_last_28_bits[28] = '\0';
+
     for(int j=0; j< 56; j++)
     {
-        key_in_round[0][j] = modified_key_for_transposition_with_CP_1[j];
+        key_in_round[0][j] = modified_key[j];
     }
-    //cout<<"\n\n..............Input key for round 0 ..............\n";
-    //printString(key_in_round[0]);
+    cout<<"\n\n..............Input key for round 0 ..............\n";
+    printString(key_in_round[0]);
 
 
     ///16 iterations should start from here
     for(int itr=0; itr < ITERATIONS; itr++)
     {
 
-	if(itr != 0)
-        {
+        // if(itr != 0)
+        // {
 
             for(int i=0; i<56; i++)
             {
-		key_in_round[itr][i] = modified_key_for_transposition_with_CP_1[i];
+                key_in_round[itr][i] = modified_key[i];
             }
-      //      cout<<"\n\n..............Input key for round "<<itr << "..............\n";
-        //    printString(key_in_round[itr]);
-        }
-	
+        //     cout<<"\n\n..............Input key for round "<<itr << "..............\n";
+        //     printString(key_in_round[itr]);
+        // }
 
-        //cout<<"\nRound - " << itr << " : First 28 bits of key : \n";
+
+       cout<<"\nRound - " << itr << " : First 28 bits of key : \n";
         for(int i = 0; i<28; i++)
         {
             first_28_bits[i] = key_in_round[itr][i];
         }
 
-        //printString(first_28_bits);
+        printString(first_28_bits);
 
-        //cout<<"\nRound - " << itr << " : Last 28 bits of key : \n";
+        cout<<"\nRound - " << itr << " : Last 28 bits of key : \n";
         for(int j = 0; j<28; j++)
         {
             last_28_bits[j] = key_in_round[itr][28+j];
         }
-        //printString(last_28_bits);
 
-	//cout<<"\nSHIFT by " << SHIFT[itr]<<endl;
+        printString(last_28_bits);
+
         left_rotated_first_28_bits = leftrotate(first_28_bits, SHIFT[itr], 28);
         left_rotated_last_28_bits = leftrotate(last_28_bits, SHIFT[itr], 28);
 
-        //cout<<"\n\nRound - " << itr << " : First 28 bits of key after left rotation : \n";
-        //cout<<left_rotated_first_28_bits;
-        //cout<<"\n\nRound - " << itr << " : Last 28 bits of key after left rotation : \n";
-        //cout<<left_rotated_last_28_bits;
+        cout<<"\n\nRound - " << itr << " : First 28 bits of key after left rotation : \n";
+        cout<<left_rotated_first_28_bits;
+        cout<<"\n\nRound - " << itr << " : Last 28 bits of key after left rotation : \n";
+        cout<<left_rotated_last_28_bits;
 
         for(int i=0; i<28; i++)
         {
@@ -286,12 +263,12 @@ void generate_key(string key)
             key_in_round[itr][28 + i] = left_rotated_last_28_bits[i];
         }
 
-        //cout << "\n\nkey in round " << itr <<" after shifting \n";
+            cout << "\n\nkey in round " << itr <<" after shifting \n";
         for(int i=0; i<56; i++)
         {
-          //      cout<<key_in_round[itr][i];
+                cout<<key_in_round[itr][i];
         }
-        //cout<<endl;
+        cout<<endl;
         
 
         ///we now transpose the shifted key using CP_2
@@ -302,15 +279,15 @@ void generate_key(string key)
 
         
         ///printing shifted and CP_2 transposed modified key
-       // cout<<"\n\nmodified key after using CP_2 in round " << itr;
-        //cout<< "\n....... K_I : " << itr <<" ...........\n";
+        cout<<"\n\nmodified key after using CP_2 in round " << itr;
+        cout<< "\n....... K_I : " << itr <<" ...........\n";
         for(int j=0; j< 48; j++)
         {
-        	K_I[itr][j] = modified_key_for_transposition_with_CP_2[j];
-          //  	cout << modified_key_for_transposition_with_CP_2[j];
+        K_I[itr][j] = modified_key_for_transposition_with_CP_2[j];
+            cout << modified_key_for_transposition_with_CP_2[j];
         }
         
-        //cout<<endl;
+        cout<<endl;
     }
 cout<<"out of generate key " <<endl;
 
@@ -364,13 +341,12 @@ char* transpose_data_with_PI(string data_block)
 
 char* iteration_steps(string data)
 {
-    cout<<"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SIMULATING DES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " <<endl;
+    cout<<"\n\nin iteration step" <<endl;
 
     char* previous_leftmost_32_bits = new char [32];
     char* previous_rightmost_32_bits = new char [32];
     char* next_leftmost_32_bits = new char [32];
     char* next_rightmost_32_bits = new char [32];
-	
 
     for(int i =0; i<32; i++)
     {
@@ -388,14 +364,34 @@ char* iteration_steps(string data)
             
         }
         
+        int E[48] = {32, 1, 2, 3, 4, 5,
+                 4, 5, 6, 7, 8, 9,
+                 8, 9, 10, 11, 12, 13,
+                 12, 13, 14, 15, 16, 17,
+                 16, 17, 18, 19, 20, 21,
+                 20, 21, 22, 23, 24, 25,
+                 24, 25, 26, 27, 28, 29,
+                 28, 29, 30, 31, 32, 1};
+
+        int PI_2[32] = {35, 38, 46, 6, 43, 40, 14, 45,
+            33, 19, 26, 15, 23, 8, 22, 10, 
+            12, 11, 5, 25, 27, 21, 16, 31,
+            28, 32, 34, 24, 9, 37, 2, 1};
+
+        int P[32] = {16, 7, 20, 21, 29, 12, 28, 17,
+                 1, 15, 23, 26, 5, 18, 31, 10,
+                 2, 8, 24, 14, 32, 27, 3, 9,
+                 19, 13, 30, 6, 22, 11, 4, 25};
+
+            
         //leftmost 32 bit expanded to 48 bit using E array
         char expanded_bit[48];
         for(int i =0; i<48; i++)
         {
-            expanded_bit[i] = previous_rightmost_32_bits[E[i]-1]; 
+            expanded_bit[i] = next_leftmost_32_bits[E[i]-1]; 
         }
 
-        //this 48 bit is xor-ed with K_I .... e xor ki
+        //this 48 bit is xor-ed with K_I
         char result_XOR[48];
         char shorten_result[32];
         char p_box[32];
@@ -418,6 +414,7 @@ char* iteration_steps(string data)
         for(int i =0; i<48; i++)
         {
             result_XOR[i] = (expanded_bit[i] ^ K_I[itr][i]);
+            next_rightmost_32_bits[i] = result_XOR[i];
             cout<<static_cast<int>(result_XOR[i]);
         }
         cout<<endl;
@@ -425,16 +422,16 @@ char* iteration_steps(string data)
         cout<<"\n\nshortening xor result - Sample 32 bits from the result according to PI_2 array\n";
         for(int i =0; i<32; i++)
         {
-            shorten_result [i] = result_XOR[PI_2[i]-1];
+            shorten_result [i] = result_XOR[PI_2[i]];
             cout<<static_cast<int>(shorten_result[i]);
         }
         cout<<endl;
 
         //32 bits now passed through the P box
-        cout<<"\n\n................ after passing 32 bits through P BOX : " << itr <<" ..............\n";
+        cout<<"\n\nafter passing 32 bits through P BOX\n";
         for(int i =0; i<32; i++)
         {
-            p_box[i] = shorten_result [P[i]-1];
+            p_box[i] = shorten_result [P[i]];
             cout<<static_cast<int>(p_box[i]);
         }
         cout<<endl;
@@ -447,7 +444,7 @@ char* iteration_steps(string data)
         cout<<endl;
         
 
-        //now xor-ing present left most 32 bit with this p_box value, we get R(i)
+        //now xor-ing previous left most 32 bit with this p_box value, we get R(i)
         cout<<"\n\nXOR-ed P box val with leftmost 32 bit\n"; 
         for(int i =0; i<32; i++)
         {
@@ -456,7 +453,7 @@ char* iteration_steps(string data)
         }
         cout<<endl;
 
-        //now for next round L(i-1) = this leftmost 32 bit and R(i-1) = this rightmost 32 bit
+        //now L(i-1) = this leftmost 32 bit and R(i-1) = this rightmost 32 bit
         cout<<"\n\nprevious leftmost 32 bit of itr " << itr <<"\n"; 
         for(int i =0; i<32; i++)
         {
@@ -543,6 +540,26 @@ char* decryption_iteration_steps(string data)
             
         }
         
+        int E[48] = {32, 1, 2, 3, 4, 5,
+                 4, 5, 6, 7, 8, 9,
+                 8, 9, 10, 11, 12, 13,
+                 12, 13, 14, 15, 16, 17,
+                 16, 17, 18, 19, 20, 21,
+                 20, 21, 22, 23, 24, 25,
+                 24, 25, 26, 27, 28, 29,
+                 28, 29, 30, 31, 32, 1};
+
+        int PI_2[32] = {35, 38, 46, 6, 43, 40, 14, 45,
+            33, 19, 26, 15, 23, 8, 22, 10, 
+            12, 11, 5, 25, 27, 21, 16, 31,
+            28, 32, 34, 24, 9, 37, 2, 1};
+
+        int P[32] = {16, 7, 20, 21, 29, 12, 28, 17,
+                 1, 15, 23, 26, 5, 18, 31, 10,
+                 2, 8, 24, 14, 32, 27, 3, 9,
+                 19, 13, 30, 6, 22, 11, 4, 25};
+
+            
         //leftmost 32 bit expanded to 48 bit using E array
         char expanded_bit[48];
         for(int i =0; i<48; i++)
@@ -573,7 +590,7 @@ char* decryption_iteration_steps(string data)
         for(int i =0; i<48; i++)
         {
             result_XOR[i] = (expanded_bit[i] ^ K_I[15-itr][i]);
-            //next_rightmost_32_bits[i] = result_XOR[i];
+            next_rightmost_32_bits[i] = result_XOR[i];
             cout<<static_cast<int>(result_XOR[i]);
         }
         cout<<endl;
@@ -741,7 +758,7 @@ int main()
     
     //key generation done...above
 
-    char* data_after_PI_transpose = new char[64];
+/*  char* data_after_PI_transpose = new char[64];
     char* data_after_completing_16_iterations = new char[64];
     char* sent_data = new char[64];
 
@@ -753,11 +770,11 @@ int main()
     cout << "\n\n" << BinaryStringToText(sent_data) << "\n";    
     cout<<"\n\n~~~~~~~~~~~~~~~~ ENCRYTION COMPLETE ~~~~~~~~~~~~~~~~~~~\n\n";
 
-    /*print_all_keys();
+    print_all_keys();
     decryption(sent_data);
 
     cout<<"\n\noriginal binary was : \n" << return_binary_str <<endl;
-
 */
+
     return 0;
 }
