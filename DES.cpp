@@ -1,3 +1,4 @@
+#include<bits/stdc++.h>
 #include<iostream>
 #include<cstdlib>
 #include<stdio.h>
@@ -9,11 +10,13 @@
 #include <random>
 #include <sstream>
 #include <bitset>
+
 #define block_size 8
 #define ITERATIONS 16
 
 using namespace std;
 //GLOBAL
+ofstream out;
 string input_key;
 string plain_text;
 char chunk_of_64[100][64];
@@ -73,7 +76,7 @@ void add_padding_at_end()
         output_str+= "~";
     }
 
-    printf("data string after padding : %s\n\n",output_str.c_str());
+    out << "data string after padding : "<< output_str.c_str()<<endl;
     plain_text = output_str;
 }
 
@@ -133,10 +136,10 @@ void binary_str_to_64_bit_block(string str)
         if(i%64 == 0)
         {
             j++;
-            cout<<endl;
+            out<<endl;
         }
         chunk_of_64[j][i%64] = str[i];
-        //cout << j << "-" << i%64 << " " << str[i] <<endl;
+        //out << j << "-" << i%64 << " " << str[i] <<endl;
 
     }
 
@@ -144,14 +147,14 @@ void binary_str_to_64_bit_block(string str)
 
 void printMatrix()
 {
-    cout << "Printing 64bit block " << endl;
+    out << "Printing 64bit block " << endl;
     for(int i =0; i < plain_text.length()/8; i++)
     {
         for(int j =0; j < 64; j++)
         {
-            cout << chunk_of_64[i][j];
+            out << chunk_of_64[i][j];
         }
-        cout<<endl;
+        out<<endl;
     }
 }
 
@@ -184,12 +187,12 @@ char* leftrotate(char arr[], int d, int n)
 
 void printString(string str)
 {
-    //cout<< "\n~~~~~~~ printing string ~~~~~~~~~~" <<endl;
+    //out<< "\n~~~~~~~ printing string ~~~~~~~~~~" <<endl;
     for(int i =0; i< str.length(); i++)
     {
-        cout<< str[i];
+        out<< str[i];
     }
-    cout<<endl;
+    out<<endl;
 }
 void generate_key(string key)
 {
@@ -312,22 +315,22 @@ void generate_key(string key)
         
         //cout<<endl;
     }
-cout<<"out of generate key " <<endl;
+out<<"out of generate key " <<endl;
 
 }
 
 void print_all_keys()
 {
-    cout << "\n.............. Printing ALL KEYS .................\n";
+    out << "\n.............. Printing ALL KEYS .................\n";
 
     for(int i=0; i< 16; i++)
     {
-        cout << "\n\n......KEY " <<i << " ........\n";
+        out << "\n\n......KEY " <<i << " ........\n";
         for(int j=0; j< 48; j++)
         {
-            cout << K_I[i][j];
+            out << K_I[i][j];
         }
-        cout<<endl;
+        out<<endl;
     }
 
 }
@@ -352,19 +355,19 @@ char* transpose_data_with_PI(string data_block)
     }
 
     //printing transposed data
-    cout<<"\n\ntransposed data after using PI \n";
+    out<<"\n\ntransposed data after using PI \n";
     for(int j=0; j< 64; j++)
     {
-        cout << transposed_data[j];
+        out << transposed_data[j];
     }
-    cout<<endl;
+    out<<endl;
     return transposed_data;
 }
 
 
 char* iteration_steps(string data)
 {
-    cout<<"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SIMULATING DES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " <<endl;
+    out<<"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SIMULATING DES ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " <<endl;
 
     char* previous_leftmost_32_bits = new char [32];
     char* previous_rightmost_32_bits = new char [32];
@@ -381,7 +384,16 @@ char* iteration_steps(string data)
     //16 iterations should start from here
     for(int itr =0; itr<ITERATIONS; itr++)
     {   
-        cout << "\n\n.................. ITERATION " << itr << ".................. \n";
+        out << "\n\n.................. ITERATION " << itr << ".................. \n";
+
+	out<<"\n\nData block \n"; 
+        for(int i =0; i<64; i++)
+        {
+            out<<data[i];
+        }
+        
+	out<<endl;
+
         for(int i =0; i<32; i++)
         {
             next_leftmost_32_bits[i] = previous_rightmost_32_bits[i]; //L(i) = R(i-1)
@@ -400,85 +412,85 @@ char* iteration_steps(string data)
         char shorten_result[32];
         char p_box[32];
 
-        cout<<"\n\nexpanded 48 bits \n";    
+        out<<"\n\nexpanded 48 bits \n";    
         for(int i =0; i<48; i++)
         {
-            cout<<expanded_bit[i];
+            out<<expanded_bit[i];
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\nK_I \n"; 
+        out<<"\n\nK_I \n"; 
         for(int i =0; i<48; i++)
         {
-            cout<<K_I[itr][i];
+            out<<K_I[itr][i];
         }
-        cout<<endl;
+        out<<endl;
         
-        cout<<"\n\nXOR-ed K_I and expanded 48 bit\n"; //R'(i) = e ^ K_I
+        out<<"\n\nXOR-ed K_I and expanded 48 bit\n"; //R'(i) = e ^ K_I
         for(int i =0; i<48; i++)
         {
             result_XOR[i] = (expanded_bit[i] ^ K_I[itr][i]);
-            cout<<static_cast<int>(result_XOR[i]);
+            out<<static_cast<int>(result_XOR[i]);
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\nshortening xor result - Sample 32 bits from the result according to PI_2 array\n";
+        out<<"\n\nshortening xor result - Sample 32 bits from the result according to PI_2 array\n";
         for(int i =0; i<32; i++)
         {
             shorten_result [i] = result_XOR[PI_2[i]-1];
-            cout<<static_cast<int>(shorten_result[i]);
+            out<<static_cast<int>(shorten_result[i]);
         }
-        cout<<endl;
+        out<<endl;
 
         //32 bits now passed through the P box
-        cout<<"\n\n................ after passing 32 bits through P BOX : " << itr <<" ..............\n";
+        out<<"\n\n................ after passing 32 bits through P BOX : " << itr <<" ..............\n";
         for(int i =0; i<32; i++)
         {
             p_box[i] = shorten_result [P[i]-1];
-            cout<<static_cast<int>(p_box[i]);
+            out<<static_cast<int>(p_box[i]);
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\nleftmost 32 bit\n"; 
+        out<<"\n\nleftmost 32 bit\n"; 
         for(int i =0; i<32; i++)
         {
-            cout<<(next_leftmost_32_bits[i]);
+            out<<(next_leftmost_32_bits[i]);
         }
-        cout<<endl;
+        out<<endl;
         
 
         //now xor-ing present left most 32 bit with this p_box value, we get R(i)
-        cout<<"\n\nXOR-ed P box val with leftmost 32 bit\n"; 
+        out<<"\n\nXOR-ed P box val with leftmost 32 bit\n"; 
         for(int i =0; i<32; i++)
         {
-            next_rightmost_32_bits[i] = (char)(next_leftmost_32_bits[i] ^ p_box[i]);
-            cout<<(next_rightmost_32_bits[i]);
+            next_rightmost_32_bits[i] = (previous_leftmost_32_bits[i] ^ p_box[i]);
+            out<<(next_rightmost_32_bits[i]);
         }
-        cout<<endl;
+        out<<endl;
 
         //now for next round L(i-1) = this leftmost 32 bit and R(i-1) = this rightmost 32 bit
-        cout<<"\n\nprevious leftmost 32 bit of itr " << itr <<"\n"; 
+        out<<"\n\nprevious leftmost 32 bit of itr " << itr <<"\n"; 
         for(int i =0; i<32; i++)
         {
             previous_leftmost_32_bits[i] = next_leftmost_32_bits[i]; 
             previous_rightmost_32_bits[i] = next_rightmost_32_bits[i];
-            cout<< previous_leftmost_32_bits[i];
+            out<< previous_leftmost_32_bits[i];
         }
-        cout<<endl;
+        out<<endl;
         
-        cout<<"\n\nprevious rightmost 32 bit of itr " << itr <<"\n"; 
+        out<<"\n\nprevious rightmost 32 bit of itr " << itr <<"\n"; 
         for(int i =0; i<32; i++)
         {
-            cout<< previous_rightmost_32_bits[i];   
+            out<< previous_rightmost_32_bits[i];   
         }
-        cout<<endl;
+        out<<endl;
 
     
     }
 
     //After iteration stops, swap the left-most 32 bits and rightmost 32 bits
     
-    cout<<"\n\ndata block after 16 iterations and swapping\n"; 
+    out<<"\n\ndata block after 16 iterations and swapping\n"; 
     char* data_block_after_iteration_step = new char[64];       
     for(int i =0; i<32; i++)
     {
@@ -489,9 +501,9 @@ char* iteration_steps(string data)
     //print 
     for(int i =0; i<64; i++)
     {
-        cout<<data_block_after_iteration_step[i];
+        out<<data_block_after_iteration_step[i];
     }
-    cout<<endl;
+    out<<endl;
 
 return data_block_after_iteration_step;
 
@@ -508,24 +520,25 @@ char* transpose_with_PI_1(string data_to_transpose)
             33, 1, 41, 9, 49, 17, 57, 25};
     
     char *transposed_data = new char[64];
-    cout<<"\n\nafter transposing with PI_1\n"; 
+    out<<"\n\nafter transposing with PI_1\n"; 
     for(int i =0; i<64; i++)
     {
         transposed_data[i] = data_to_transpose[PI_1[i]-1];
-        cout<<transposed_data[i];   
+        out<<transposed_data[i];   
     }
-    cout<<endl;
+    out<<endl;
 return transposed_data;
 }
 
 char* decryption_iteration_steps(string data)
 {
-    cout<<"\n\n~~~~~~~~~~~~~~~~~~~~~~ in decryption iteration step ~~~~~~~~~~~~~~~~~~~~~~~~~~" <<endl;
+    out<<"\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ SIMULATING DES DECRYPTION ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ " <<endl;
 
     char* previous_leftmost_32_bits = new char [32];
     char* previous_rightmost_32_bits = new char [32];
     char* next_leftmost_32_bits = new char [32];
     char* next_rightmost_32_bits = new char [32];
+	
 
     for(int i =0; i<32; i++)
     {
@@ -536,7 +549,16 @@ char* decryption_iteration_steps(string data)
     //16 iterations should start from here
     for(int itr =0; itr<ITERATIONS; itr++)
     {   
-        cout << "\n\n.................. DECRYPTION ITERATION " << itr << ".................. \n";
+        out << "\n\n.................. DECRYPTION ITERATION " << itr << ".................. \n";
+
+	out<<"\n\nData block \n"; 
+        for(int i =0; i<64; i++)
+        {
+            out<<data[i];
+        }
+        
+	out<<endl;
+
         for(int i =0; i<32; i++)
         {
             next_leftmost_32_bits[i] = previous_rightmost_32_bits[i]; //L(i) = R(i-1)
@@ -547,94 +569,93 @@ char* decryption_iteration_steps(string data)
         char expanded_bit[48];
         for(int i =0; i<48; i++)
         {
-            expanded_bit[i] = next_leftmost_32_bits[E[i]-1]; 
+            expanded_bit[i] = previous_rightmost_32_bits[E[i]-1]; 
         }
 
-        //this 48 bit is xor-ed with K_I
+        //this 48 bit is xor-ed with K_I .... e xor ki
         char result_XOR[48];
         char shorten_result[32];
         char p_box[32];
 
-        cout<<"\n\ndecryption: expanded 48 bits \n";    
+        out<<"\n\nexpanded 48 bits \n";    
         for(int i =0; i<48; i++)
         {
-            cout<<expanded_bit[i];
+            out<<expanded_bit[i];
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\ndecryption: K_I \n"; 
+        out<<"\n\nK_I \n"; 
         for(int i =0; i<48; i++)
         {
-            cout<<K_I[15-itr][i];
+            out<<K_I[15-itr][i];
         }
-        cout<<endl;
+        out<<endl;
         
-        cout<<"\n\ndecryption: XOR-ed K_I and expanded 48 bit\n"; //R'(i) = e ^ K_I
+        out<<"\n\nXOR-ed K_I and expanded 48 bit\n"; //R'(i) = e ^ K_I
         for(int i =0; i<48; i++)
         {
             result_XOR[i] = (expanded_bit[i] ^ K_I[15-itr][i]);
-            //next_rightmost_32_bits[i] = result_XOR[i];
-            cout<<static_cast<int>(result_XOR[i]);
+            out<<static_cast<int>(result_XOR[i]);
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\ndecryption: shortening xor result - Sample 32 bits from the result according to PI_2 array\n";
+        out<<"\n\nshortening xor result - Sample 32 bits from the result according to PI_2 array\n";
         for(int i =0; i<32; i++)
         {
-            shorten_result [i] = result_XOR[PI_2[i]];
-            cout<<static_cast<int>(shorten_result[i]);
+            shorten_result [i] = result_XOR[PI_2[i]-1];
+            out<<static_cast<int>(shorten_result[i]);
         }
-        cout<<endl;
+        out<<endl;
 
         //32 bits now passed through the P box
-        cout<<"\n\nafter passing 32 bits through P BOX\n";
+        out<<"\n\n................ after passing 32 bits through P BOX : " << itr <<" ..............\n";
         for(int i =0; i<32; i++)
         {
-            p_box[i] = shorten_result [P[i]];
-            cout<<static_cast<int>(p_box[i]);
+            p_box[i] = shorten_result [P[i]-1];
+            out<<static_cast<int>(p_box[i]);
         }
-        cout<<endl;
+        out<<endl;
 
-        cout<<"\n\nleftmost 32 bit\n"; 
+        out<<"\n\nleftmost 32 bit\n"; 
         for(int i =0; i<32; i++)
         {
-            cout<<(next_leftmost_32_bits[i]);
+            out<<(next_leftmost_32_bits[i]);
         }
-        cout<<endl;
+        out<<endl;
         
 
-        //now xor-ing previous left most 32 bit with this p_box value, we get R(i)
-        cout<<"\n\ndecryption: XOR-ed P box val with leftmost 32 bit\n"; 
+        //now xor-ing present left most 32 bit with this p_box value, we get R(i)
+        out<<"\n\nXOR-ed P box val with leftmost 32 bit\n"; 
         for(int i =0; i<32; i++)
         {
-            next_rightmost_32_bits[i] = (char)(next_leftmost_32_bits[i] ^ p_box[i]);
-            cout<<(next_rightmost_32_bits[i]);
+            next_rightmost_32_bits[i] = (previous_leftmost_32_bits[i] ^ p_box[i]);
+            out<<(next_rightmost_32_bits[i]);
         }
-        cout<<endl;
+        out<<endl;
 
-        //now L(i-1) = this leftmost 32 bit and R(i-1) = this rightmost 32 bit
-        cout<<"\n\ndecryption: previous leftmost 32 bit of itr " << itr <<"\n"; 
+        //now for next round L(i-1) = this leftmost 32 bit and R(i-1) = this rightmost 32 bit
+        out<<"\n\nprevious leftmost 32 bit of itr " << itr <<"\n"; 
         for(int i =0; i<32; i++)
         {
             previous_leftmost_32_bits[i] = next_leftmost_32_bits[i]; 
             previous_rightmost_32_bits[i] = next_rightmost_32_bits[i];
-            cout<< previous_leftmost_32_bits[i];
+            out<< previous_leftmost_32_bits[i];
         }
-        cout<<endl;
+        out<<endl;
         
-        cout<<"\n\ndecryption: previous rightmost 32 bit of itr " << itr <<"\n"; 
+        out<<"\n\nprevious rightmost 32 bit of itr " << itr <<"\n"; 
         for(int i =0; i<32; i++)
         {
-            cout<< previous_rightmost_32_bits[i];   
+            out<< previous_rightmost_32_bits[i];   
         }
-        cout<<endl;
+        out<<endl;
 
     
     }
 
     //After iteration stops, swap the left-most 32 bits and rightmost 32 bits
     
-    cout<<"\n\ndecryption: data block after 16 iterations and swapping\n"; 
+    out<<"\n\ndata block after 16 iterations and swapping\n"; 
     char* data_block_after_iteration_step = new char[64];       
     for(int i =0; i<32; i++)
     {
@@ -645,19 +666,35 @@ char* decryption_iteration_steps(string data)
     //print 
     for(int i =0; i<64; i++)
     {
-        cout<<data_block_after_iteration_step[i];
+        out<<data_block_after_iteration_step[i];
     }
-    cout<<endl;
+    out<<endl;
 
 return data_block_after_iteration_step;
 
 }
 
-string BinaryStringToText(string binaryString) {
 
-    cout<<"in binaryStringTOText "<<endl;
-    cout<<"received binary string : \n" << binaryString<<endl;
 
+int convertBinaryToInt(string bin){
+	unsigned int val = 0;
+	unsigned int index = 0;  
+	int Size = bin.size();
+
+	for(int i = Size-1; i >= 0; i--){
+		val += ((unsigned int) (bin[i]-'0'))*pow(2,index);
+		index++;
+	}
+	
+	return val; 
+}
+
+string BinaryStringToText(string binaryString, int cipher) {
+
+    out<<"in binaryStringTOText "<<endl;
+    out<<"received binary string : \n" << binaryString<<endl;
+
+    //cout<<convertBinaryToInt(binaryString)<<endl;
     int sz=binaryString.size()/8;
     string ans="";
     for(int i=sz-1;i>=0;i--){
@@ -674,35 +711,42 @@ string BinaryStringToText(string binaryString) {
         num%=256;
         ans.push_back(num);
     }
-    reverse(ans.begin(),ans.end());
+   reverse(ans.begin(),ans.end());
+   out << "Plain_text with/without Padding: " << ans << endl;
+	
+		
+	if(cipher == 1)	{cout << ans;}
+		for(int i = ans.size()-1; i >= 0 ; i--){
+			if(ans[i] != '~') break;
+			else ans[i] = ' ';
+		}
+		out << "\ndecrypted plain_text: " << ans << endl;
+	
     return ans;
 }
 
-void decryption(string recvd_data)
+string decryption(string recvd_data)
 {
     char* de_transpose_data_with_PI = new char[64];
     de_transpose_data_with_PI = transpose_data_with_PI(recvd_data);
 
     //print 
-    cout<< "\n\nDE- transposed data using PI \n";
+    out<< "\n\nDE- transposed data using PI \n";
     for(int i =0; i<64; i++)
     {
-        cout<< de_transpose_data_with_PI[i];
+        out<< de_transpose_data_with_PI[i];
     }
-    cout<<endl;
+    out<<endl;
 
         
-    
     char *decrypted_str =  new char[64];
     decrypted_str = decryption_iteration_steps(de_transpose_data_with_PI);
-    cout<<"\ndecryption: "; 
+    out<<"\ndecryption: "; 
     char* deciphered_text = transpose_with_PI_1(decrypted_str);
-    for(int i =0; i<64; i++)
-    {
-        //deciphered_text[i] += '0';
-    }
-    cout << "\n\n" << BinaryStringToText(deciphered_text) << "\n";
-
+    
+	string ret = BinaryStringToText(deciphered_text,0);
+	out<<ret<<endl;
+	return ret;
 
 }
 
@@ -710,9 +754,18 @@ void decryption(string recvd_data)
 int main()
 {
 
+	out.open("Out.txt");
+	
+	if(!out.is_open()){
+		out << "Error in File Opening" << endl;
 
-    input_key = "megabuck";
-    plain_text = "Hello wo";
+		return -1;
+	}
+
+	cout<<"\nEnter input key : ";
+    	getline(cin, input_key) ;
+ 	cout<<"\nEnter input text : ";
+    	getline(cin,plain_text);
 
     for(int i=0; i<16; i++)
     {
@@ -721,19 +774,21 @@ int main()
 
     add_padding_at_end();
 
-    cout << "plain text with padding is : " << plain_text << endl;
+    out << "plain text with padding is : " << plain_text << endl;
 
     ///plain text to binary
     string return_binary_str = strToBinary(plain_text);
-    cout<< return_binary_str <<endl;
+    out<< return_binary_str <<endl;
+
+    int num_of_block = return_binary_str.length()/64; //rows of data block
 
     binary_str_to_64_bit_block(return_binary_str);
     printMatrix();
 
     ///key string to binary
     string return_binary_str_of_key = strToBinary(input_key);
-    cout<< "\nBinary string of key :\n";
-    cout << return_binary_str_of_key << endl;
+    out<< "\nBinary string of key :\n";
+    out << return_binary_str_of_key << endl;
 
     ///generating 16 keys
     generate_key(return_binary_str_of_key);
@@ -745,19 +800,47 @@ int main()
     char* data_after_completing_16_iterations = new char[64];
     char* sent_data = new char[64];
 
-    //ekhane shob gula block er jonne iteration hobe-apatoto first block hoche
-    data_after_PI_transpose = transpose_data_with_PI(chunk_of_64[0]);
-    data_after_completing_16_iterations = iteration_steps(data_after_PI_transpose);
+    
+    char final_msg[num_of_block][8];
 
-    sent_data = transpose_with_PI_1(data_after_completing_16_iterations);
-    cout << "\n\n" << BinaryStringToText(sent_data) << "\n";    
-    cout<<"\n\n~~~~~~~~~~~~~~~~ ENCRYTION COMPLETE ~~~~~~~~~~~~~~~~~~~\n\n";
+     cout<<"\nCiphered Text : ";
+    //ekhane shob gula block er jonne iteration hobe
+    for(int i =0; i<num_of_block; i++)
+    {
+	    out<<"\n\n\n~~~~~~~~~~~~~~~~ ENCRYTION OF BLOCK "<< i <<" STARTS ~~~~~~~~~~~~~~~~~~~\n\n\n";
+	    data_after_PI_transpose = transpose_data_with_PI(chunk_of_64[i]);
+	    data_after_completing_16_iterations = iteration_steps(data_after_PI_transpose);
 
-    /*print_all_keys();
-    decryption(sent_data);
+	    sent_data = transpose_with_PI_1(data_after_completing_16_iterations);
+	    
+	    //print_message(sent_data);
+	    
+	    out << "\n\n" << BinaryStringToText(sent_data,1) << "\n";    
+	    out<<"\n\n\n~~~~~~~~~~~~~~~~ ENCRYTION OF BLOCK "<< i <<" COMPLETE ~~~~~~~~~~~~~~~~~~~\n\n\n";
+	    out<<"\n\n\n~~~~~~~~~~~~~~~~ DECRYPTION OF BLOCK "<< i <<" STARTS ~~~~~~~~~~~~~~~~~~~\n\n\n";
 
-    cout<<"\n\noriginal binary was : \n" << return_binary_str <<endl;
+	    
+	    string my_str = decryption(sent_data);
+	    out<<"~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ "<<my_str <<" ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"<<endl;
+		
+		for(int j=0;j<8; j++)	    
+		{
+			final_msg[i][j]= my_str[j];
+		}
+	    out<<"\n\n\n~~~~~~~~~~~~~~~~ DECRYPTION OF BLOCK "<< i <<" ENDS ~~~~~~~~~~~~~~~~~~~\n\n\n";
 
-*/
+
+	}
+	cout<<"\n\nDeciphered : ";
+	for(int i=0; i<num_of_block; i++)
+	{
+		for(int j=0; j<8; j++)	    
+		{
+			cout << final_msg[i][j];
+		}
+		
+	}
+	cout<<endl;
+
     return 0;
 }
